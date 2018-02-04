@@ -5,7 +5,6 @@ import cz.cvut.fit.blazeva.app.control.Model;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GLUtil;
 import org.lwjgl.system.Callback;
 
 import java.io.IOException;

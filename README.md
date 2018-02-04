@@ -1,23 +1,17 @@
-# Simple sokoban puzzle game
+# Conway's game of life
 
-As a demonstration of a simplistic game with **lwjgl**.
+As a demonstration of a simple simulation with **lwjgl**.
 
-## Description 
-Each map is played on a round-like manner on a rectangular grid.
-Each grid point might contain either walls, boxes, goals or the player character.
-Player controls his character with arrows and tries to push boxes onto the goals.
-The player wins if all goals are occupied by the boxes.
+## Description
+The game of life is a simulation on a grid divided into cells.
+The simulation happens in rounds and state of each cell is devised from states of it's neighbours from the previous round.
 
-Use **Arrow** keys to move, use **R** to reset the level.
+What will be implemented:
+* stateful grid
+* mouse controls
+* clear, pause, play controls
 
-What is complete:
-* described play mechanics
-* player controls
-* win conditiono 
-* several maps
-
-What was ommited
-* menu
+What will be omitted:
 * settings
 
 ## Build
@@ -29,8 +23,3 @@ compile with maven
 run as jar file
 
     java -jar target/gameoflife.jar
-
-## Picture
-
-<img alt="Nový sloupec hodnocení" src="./pics/example.png"/>
-

@@ -3,7 +3,8 @@ package cz.cvut.fit.blazeva.app.control;
 import cz.cvut.fit.blazeva.app.model.Goal;
 import cz.cvut.fit.blazeva.app.model.Player;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 

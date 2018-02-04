@@ -9,8 +9,6 @@ import java.nio.IntBuffer;
 
 import static cz.cvut.fit.blazeva.util.DemoUtils.ioResourceToByteBuffer;
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL20.GL_COMPILE_STATUS;
-import static org.lwjgl.opengl.GL20.glGetShaderInfoLog;
 
 public class Shader {
 

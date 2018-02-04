@@ -6,8 +6,6 @@ import java.io.IOException;
 
 import static cz.cvut.fit.blazeva.app.view.Shader.createShader;
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL20.GL_LINK_STATUS;
-import static org.lwjgl.opengl.GL20.glGetProgramInfoLog;
 
 public class Program {
 
