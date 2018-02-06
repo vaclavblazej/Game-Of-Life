@@ -4,7 +4,8 @@ import org.joml.Quaternionf;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
 
-public class SpaceCamera {
+public class Camera {
+
     public Vector3f linearAcc = new Vector3f();
     public Vector3f linearVel = new Vector3f();
     public float linearDamping = 0.08f;
@@ -16,10 +17,10 @@ public class SpaceCamera {
     public Vector3f angularVel = new Vector3f();
     public float angularDamping = 0.5f;
 
-    public Vector3d position = new Vector3d(0, 0, 10);
+    public Vector3f position = new Vector3f(0, 0, 10);
     public Quaternionf rotation = new Quaternionf();
 
-    public SpaceCamera update(float dt) {
+    public Camera update(float dt) {
         // update linear velocity based on linear acceleration
         linearVel.fma(dt, linearAcc);
         // update angular velocity based on angular acceleration

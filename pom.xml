@@ -10,7 +10,7 @@
 
     <properties>
         <lwjgl.version>3.1.5</lwjgl.version>
-        <joml.version>1.9.9-SNAPSHOT</joml.version>
+        <joml.version>1.9.8</joml.version>
         <class>Application</class>
         <java.version>1.8</java.version>
     </properties>

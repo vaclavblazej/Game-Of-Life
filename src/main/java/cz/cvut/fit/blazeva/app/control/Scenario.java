@@ -1,107 +1,70 @@
 package cz.cvut.fit.blazeva.app.control;
 
-import cz.cvut.fit.blazeva.app.model.Goal;
-import cz.cvut.fit.blazeva.app.model.Player;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import static cz.cvut.fit.blazeva.util.DemoUtils.ioResourceToBufferedReader;
+import java.util.Random;
 
 public class Scenario {
 
     public enum TileTypes {
-        BOX, WALL, EMPTY;
+        OCCUPIED, EMPTY;
     }
 
-    public int size;
-    public boolean won;
+    public int size = 40;
 
-    public TileTypes[][] map;
+    public TileTypes[][] map, off, tmp;
 
-    public List<Goal> goals = new ArrayList<>();
+    public Scenario() {
+        map = new TileTypes[size][size];
+        off = new TileTypes[size][size];
+        clear(map);
+        clear(off);
+    }
 
+    private void clear(TileTypes[][] arr) {
+        final Random random = new Random();
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                arr[i][j] = (random.nextInt() % 100) > 50 ? TileTypes.EMPTY : TileTypes.OCCUPIED;
+            }
+        }
+    }
 
-    public Player player = new Player();
+    private void swapMaps() {
+        tmp = map;
+        map = off;
+        off = tmp;
+    }
 
+    public void toggle(int bx, int by) {
+        if (bx >= 0 && bx < size && by >= 0 && by < size) {
+            map[bx][by] = TileTypes.OCCUPIED;
+        }
+    }
 
-    public Scenario(String name) {
-        won = false;
-        try {
-            System.out.println("loading scenario " + name);
-            try (final BufferedReader br = ioResourceToBufferedReader("cz/cvut/fit/blazeva/levels/" + name)) {
-                String line;
-                line = br.readLine();
-                size = Integer.parseInt(line);
-                map = new TileTypes[size][size];
-                for (int j = size - 1; j >= 0 && (line = br.readLine()) != null; --j) {
-                    for (int i = 0; i < line.length(); ++i) {
-                        switch (line.charAt(i)) {
-                            case 'W': // wall
-                                map[i][j] = TileTypes.WALL;
-                                break;
-                            case 'b': // box
-                                map[i][j] = TileTypes.BOX;
-                                break;
-                            case 'g': // goal
-                                goals.add(new Goal(i, j));
-                                map[i][j] = TileTypes.EMPTY;
-                                break;
-                            case 'p': // player
-                                player.x = i;
-                                player.y = j;
-                                map[i][j] = TileTypes.EMPTY;
-                                break;
-                            case '-': // empty space
-                                map[i][j] = TileTypes.EMPTY;
-                                break;
-                        }
+    private int dx[] = {1, 1, 1, 0, 0, -1, -1, -1};
+    private int dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
+
+    public void update() {
+        clear(off);
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                int count = 0;
+                for (int k = 0; k < dx.length; k++) {
+                    int x = j + dx[k];
+                    int y = i + dy[k];
+                    if (x < 0 || x >= size) continue;
+                    if (y < 0 || y >= size) continue;
+                    if (map[y][x] == TileTypes.OCCUPIED) {
+                        count++;
                     }
                 }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("ERROR LOADING LEVEL");
-        }
-    }
-
-    private boolean moveAll(int x, int y, int dx, int dy) {
-        switch (map[x][y]) {
-            case WALL:
-                return false;
-            case BOX:
-                final boolean b = moveAll(x + dx, y + dy, dx, dy);
-                if (b) {
-                    TileTypes tmp = map[x][y];
-                    map[x][y] = map[x + dx][y + dy];
-                    map[x + dx][y + dy] = tmp;
+                if (map[i][j] == TileTypes.OCCUPIED) {
+                    off[i][j] = count >= 2 && count <= 3 ? TileTypes.OCCUPIED : TileTypes.EMPTY;
+                } else {
+                    off[i][j] = count == 3 ? TileTypes.OCCUPIED : TileTypes.EMPTY;
                 }
-                return b;
-            case EMPTY:
-                return true;
-            default:
-                return false;
+            }
         }
-    }
-
-    public void move(int dx, int dy) {
-        int nx = player.x + dx;
-        int ny = player.y + dy;
-        nx = Math.max(Math.min(nx, size - 1), 0);
-        ny = Math.max(Math.min(ny, size - 1), 0);
-        if (moveAll(nx, ny, dx, dy)) {
-            player.x = nx;
-            player.y = ny;
-        }
-        int finished = 0;
-        for (Goal goal : goals) {
-            if (map[goal.x][goal.y] == TileTypes.BOX) finished++;
-        }
-        if (finished == goals.size()) {
-            won = true;
-        }
+        swapMaps();
     }
 
 }

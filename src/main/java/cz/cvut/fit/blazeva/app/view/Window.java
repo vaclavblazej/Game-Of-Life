@@ -1,7 +1,7 @@
 package cz.cvut.fit.blazeva.app.view;
 
-import cz.cvut.fit.blazeva.app.control.Logic;
-import cz.cvut.fit.blazeva.app.control.Model;
+import cz.cvut.fit.blazeva.app.control.Control;
+import cz.cvut.fit.blazeva.app.model.Model;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
@@ -10,7 +10,7 @@ import org.lwjgl.system.Callback;
 import java.io.IOException;
 import java.nio.IntBuffer;
 
-import static cz.cvut.fit.blazeva.app.control.Model.*;
+import static cz.cvut.fit.blazeva.app.model.Model.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
@@ -25,7 +25,7 @@ public class Window {
     private GLFWFramebufferSizeCallback fbCallback;
     private GLFWWindowSizeCallback wsCallback;
     private Callback debugProc;
-    private Logic logic;
+    private Control control;
 
 
     private void init() throws IOException {
@@ -70,19 +70,19 @@ public class Window {
         });
 
         glfwSetKeyCallback(window, keyCallback = new GLFWKeyCallback() {
-            public void invoke(long window, int key, int scancode, int action, int mods) {
-                if (key == GLFW_KEY_UNKNOWN)
+            public void invoke(long window, int keyCode, int scancode, int action, int mods) {
+                if (keyCode == GLFW_KEY_UNKNOWN)
                     return;
-                if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
+                if (keyCode == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
                     glfwSetWindowShouldClose(window, true);
                 }
-                if(action == GLFW_PRESS){
-                    Model.keyTapped[key] = true;
+                if (action == GLFW_PRESS) {
+                    control.key.tap(keyCode);
                 }
                 if (action == GLFW_PRESS || action == GLFW_REPEAT) {
-                    Model.keyDown[key] = true;
+                    control.key.down(keyCode);
                 } else {
-                    Model.keyDown[key] = false;
+                    control.key.up(keyCode);
                 }
             }
         });
@@ -96,18 +96,11 @@ public class Window {
         });
         glfwSetMouseButtonCallback(window, mbCallback = new GLFWMouseButtonCallback() {
             public void invoke(long window, int button, int action, int mods) {
-                if (button == GLFW_MOUSE_BUTTON_LEFT) {
-                    if (action == GLFW_PRESS) {
-                        Model.leftMouseDown = true;
-                    } else if (action == GLFW_RELEASE) {
-                        Model.leftMouseDown = false;
-                    }
-                } else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
-                    if (action == GLFW_PRESS) {
-                        Model.rightMouseDown = true;
-                    } else if (action == GLFW_RELEASE) {
-                        Model.rightMouseDown = false;
-                    }
+                if (action == GLFW_PRESS) {
+                    control.mouse.down(button);
+                    control.mouse.click(button);
+                } else {
+                    control.mouse.up(button);
                 }
             }
         });
@@ -125,7 +118,7 @@ public class Window {
         }
 //        debugProc = GLUtil.setupDebugMessageCallback();
 
-        logic.initialize();
+        control.initialize();
 
         glEnableClientState(GL_VERTEX_ARRAY);
         glEnable(GL_DEPTH_TEST);
@@ -134,10 +127,10 @@ public class Window {
     }
 
     public void run() {
-        logic = new Logic();
+        control = new Control();
         try {
             init();
-            logic.loop();
+            control.loop(window);
             if (debugProc != null) {
                 debugProc.free();
             }
